@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Exam {
+  id            String    @id @default(cuid())
+  nome          String
+  resultado     String
+  unidade       String?
+  referencia    String?
+  categoria     String
+  dataColeta    DateTime  @map("data_coleta") @db.Date
+  dataLiberacao DateTime? @map("data_liberacao") @db.Date
+  laboratorio   String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@map("exams")
+}
+
+model Exercise {
+  id      String  @id @default(cuid())
+  nome    String
+  grupo   String
+  notas   String?
+
+  templateExercises WorkoutTemplateExercise[]
+  setLogs           SetLog[]
+
+  @@map("exercises")
+}
+
+model WorkoutTemplate {
+  id     String @id @default(cuid())
+  nome   String
+  ordem  Int
+
+  exercises WorkoutTemplateExercise[]
+  sessions  WorkoutSession[]
+
+  @@map("workout_templates")
+}
+
+model WorkoutTemplateExercise {
+  id         String @id @default(cuid())
+  templateId String @map("template_id")
+  exerciseId String @map("exercise_id")
+  ordem      Int
+  seriesAlvo Int    @map("series_alvo")
+  repsAlvo   String @map("reps_alvo")
+  notas      String?
+
+  template WorkoutTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  exercise Exercise        @relation(fields: [exerciseId], references: [id])
+
+  @@map("workout_template_exercises")
+}
+
+model WorkoutSession {
+  id          String   @id @default(cuid())
+  data        DateTime @db.Date
+  templateId  String   @map("template_id")
+  duracaoMin  Int?     @map("duracao_min")
+  comoFoi     String?  @map("como_foi")
+  observacoes String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  template WorkoutTemplate @relation(fields: [templateId], references: [id])
+  setLogs  SetLog[]
+
+  @@map("workout_sessions")
+}
+
+model SetLog {
+  id          String   @id @default(cuid())
+  sessionId   String   @map("session_id")
+  exerciseId  String   @map("exercise_id")
+  ordemSerie  Int      @map("ordem_serie")
+  pesoKg      Float?   @map("peso_kg")
+  reps        Int?
+  tag         String?
+  unilateral  Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  session  WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  exercise Exercise       @relation(fields: [exerciseId], references: [id])
+
+  @@map("set_logs")
+}
+
+model BodyMetric {
+  id            String   @id @default(cuid())
+  data          DateTime @db.Date
+  pesoCorporal  Float?   @map("peso_corporal")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("body_metrics")
+}
