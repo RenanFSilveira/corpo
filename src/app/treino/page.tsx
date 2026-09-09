@@ -77,12 +77,28 @@ export default async function TreinoPage() {
         })}
       </div>
 
-      <div className="pt-2">
+      {/* Quick links */}
+      <div className="grid grid-cols-3 gap-2 pt-2">
+        <Link
+          href="/progressao"
+          className="flex flex-col items-center gap-1 py-3 rounded-xl border border-gray-700 text-gray-400 text-xs font-medium"
+        >
+          <span className="text-lg">📈</span>
+          Progressão
+        </Link>
         <Link
           href="/exames"
-          className="block w-full text-center py-3 rounded-xl border border-gray-700 text-gray-400 text-sm"
+          className="flex flex-col items-center gap-1 py-3 rounded-xl border border-gray-700 text-gray-400 text-xs font-medium"
         >
-          Ver exames de sangue
+          <span className="text-lg">🩸</span>
+          Exames
+        </Link>
+        <Link
+          href="/plano"
+          className="flex flex-col items-center gap-1 py-3 rounded-xl border border-gray-700 text-gray-400 text-xs font-medium"
+        >
+          <span className="text-lg">📋</span>
+          Plano
         </Link>
       </div>
     </div>
