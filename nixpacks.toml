@@ -1,0 +1,5 @@
+[phases.setup]
+nixPkgs = ["openssl"]
+
+[start]
+cmd = "node_modules/.bin/prisma db push && node_modules/.bin/next start"
