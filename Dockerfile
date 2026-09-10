@@ -13,7 +13,7 @@ FROM base AS builder
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
 COPY tailwindcss-postcss-4.3.3.tgz ./
-RUN npm ci
+RUN NODE_ENV=development npm ci
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
