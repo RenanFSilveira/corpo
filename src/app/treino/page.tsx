@@ -78,7 +78,7 @@ export default async function TreinoPage() {
       </div>
 
       {/* Quick links */}
-      <div className="grid grid-cols-3 gap-2 pt-2">
+      <div className="grid grid-cols-2 gap-2 pt-2">
         <Link
           href="/progressao"
           className="flex flex-col items-center gap-1 py-3 rounded-xl border border-gray-700 text-gray-400 text-xs font-medium"
@@ -99,6 +99,13 @@ export default async function TreinoPage() {
         >
           <span className="text-lg">📋</span>
           Plano
+        </Link>
+        <Link
+          href="/coach"
+          className="flex flex-col items-center gap-1 py-3 rounded-xl border border-green-800 bg-green-900/20 text-green-400 text-xs font-medium"
+        >
+          <span className="text-lg">🤖</span>
+          Coach IA
         </Link>
       </div>
     </div>
