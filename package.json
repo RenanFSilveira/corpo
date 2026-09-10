@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@alloc/quick-lru": "^5.3.0",
+    "@anthropic-ai/claude-code": "^2.1.267",
     "@anthropic-ai/sdk": "^0.124.0",
     "@prisma/client": "^5.22.0",
     "@tailwindcss/node": "^4.3.3",

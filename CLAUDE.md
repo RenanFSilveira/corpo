@@ -38,6 +38,7 @@ npm run dev
 | `DATABASE_URL` | `postgresql://user:pass@host:5432/meucorpo` |
 | `AUTH_PASSWORD` | Senha de acesso ao app |
 | `SESSION_SECRET` | Token opaco armazenado no cookie (nunca a senha). Gere com `openssl rand -hex 32`. |
+| `ANTHROPIC_API_KEY` | Chave da API Anthropic. Usada pelo Coach IA (`claude -p` via `@anthropic-ai/claude-code`). |
 
 ## Backup do banco de dados
 

@@ -1,10 +1,9 @@
+import { spawn } from 'child_process'
+import { join } from 'path'
 import { NextRequest, NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
 import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
-
-const client = new Anthropic()
 
 async function buildContext(n = 15): Promise<string> {
   const [exams, templates, sessions, lastMetric] = await Promise.all([
@@ -41,7 +40,6 @@ async function buildContext(n = 15): Promise<string> {
     lines.push(`\n## Métricas Corporais\n- Peso atual: ${lastMetric.pesoCorporal} kg (${new Date(lastMetric.data).toLocaleDateString('pt-BR')})`)
   }
 
-  // Exames agrupados por categoria
   lines.push('\n## Exames de Sangue')
   const byCategory = new Map<string, typeof exams>()
   for (const e of exams) {
@@ -57,7 +55,6 @@ async function buildContext(n = 15): Promise<string> {
     }
   }
 
-  // Plano de treino
   lines.push('\n## Plano de Treino')
   for (const t of templates) {
     lines.push(`\n### ${t.nome}`)
@@ -67,7 +64,6 @@ async function buildContext(n = 15): Promise<string> {
     }
   }
 
-  // Histórico de sessões
   lines.push(`\n## Histórico (últimas ${sessions.length} sessões)`)
   for (const s of sessions) {
     const date = new Date(s.data).toLocaleDateString('pt-BR')
@@ -100,6 +96,11 @@ Responda sempre em português brasileiro. Seja direto, prático e baseado em evi
 
 Você pode opinar sobre: ajuste de cargas, progressão de volume, deload, substituição de exercícios, interpretação de exames no contexto esportivo, e ajustes de programa. Você não faz diagnósticos médicos.`
 
+function claudeBin(): string {
+  const local = join(process.cwd(), 'node_modules/.bin/claude')
+  return local
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
@@ -111,25 +112,52 @@ export async function POST(req: NextRequest) {
 
     const context = await buildContext()
 
-    const stream = await client.messages.stream({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1024,
-      system: `${SYSTEM_PROMPT}\n\n${context}`,
-      messages,
-    })
+    // Histórico formatado como texto — claude -p não suporta multi-turn nativo
+    const history = messages
+      .slice(0, -1)
+      .map((m) => `**${m.role === 'user' ? 'Usuário' : 'Coach'}**: ${m.content}`)
+      .join('\n\n')
+
+    const lastMessage = messages[messages.length - 1]
+    const prompt = history
+      ? `${history}\n\n**Usuário**: ${lastMessage.content}`
+      : lastMessage.content
 
     const encoder = new TextEncoder()
     const readable = new ReadableStream({
-      async start(controller) {
-        for await (const chunk of stream) {
-          if (
-            chunk.type === 'content_block_delta' &&
-            chunk.delta.type === 'text_delta'
-          ) {
-            controller.enqueue(encoder.encode(chunk.delta.text))
+      start(controller) {
+        const proc = spawn(
+          claudeBin(),
+          [
+            '-p',
+            '--bare',
+            '--output-format', 'text',
+            '--model', 'claude-opus-4-8',
+            '--system-prompt', `${SYSTEM_PROMPT}\n\n${context}`,
+            prompt,
+          ],
+          {
+            env: { ...process.env },
+            stdio: ['ignore', 'pipe', 'pipe'],
           }
-        }
-        controller.close()
+        )
+
+        proc.stdout.on('data', (chunk: Buffer) => {
+          controller.enqueue(encoder.encode(chunk.toString()))
+        })
+
+        proc.stdout.on('end', () => {
+          controller.close()
+        })
+
+        proc.on('error', (err) => {
+          console.error('[coach] claude process error:', err)
+          controller.error(err)
+        })
+
+        proc.stderr.on('data', (data: Buffer) => {
+          console.error('[coach] stderr:', data.toString().trim())
+        })
       },
     })
 
@@ -137,7 +165,7 @@ export async function POST(req: NextRequest) {
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     })
   } catch (err) {
-    console.error('Coach API error:', err)
+    console.error('[coach] API error:', err)
     return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
   }
 }
