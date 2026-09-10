@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const AUTH_PASSWORD = process.env.AUTH_PASSWORD
+const SESSION_SECRET = process.env.SESSION_SECRET
 
-const PUBLIC_PATHS = ['/api/auth', '/login', '/_next', '/favicon.ico', '/manifest.json', '/icons']
+const PUBLIC_PATHS = ['/api/auth', '/login', '/_next', '/favicon.ico', '/manifest.json', '/icons', '/sw.js']
 
-export function proxy(req: NextRequest) {
-  if (!AUTH_PASSWORD) return NextResponse.next()
+export function middleware(req: NextRequest) {
+  if (!SESSION_SECRET) return NextResponse.next()
 
   const { pathname } = req.nextUrl
 
@@ -14,11 +14,9 @@ export function proxy(req: NextRequest) {
   }
 
   const cookie = req.cookies.get('auth_token')
-  if (cookie?.value === AUTH_PASSWORD) {
+  if (cookie?.value === SESSION_SECRET) {
     return NextResponse.next()
   }
-
-  if (pathname === '/login') return NextResponse.next()
 
   const loginUrl = req.nextUrl.clone()
   loginUrl.pathname = '/login'
