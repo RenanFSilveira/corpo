@@ -130,7 +130,6 @@ export async function POST(req: NextRequest) {
           claudeBin(),
           [
             '-p',
-            '--bare',
             '--output-format', 'text',
             '--model', 'claude-opus-4-8',
             '--system-prompt', `${SYSTEM_PROMPT}\n\n${context}`,
