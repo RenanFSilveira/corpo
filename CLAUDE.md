@@ -37,6 +37,15 @@ npm run dev
 |---|---|
 | `DATABASE_URL` | `postgresql://user:pass@host:5432/meucorpo` |
 | `AUTH_PASSWORD` | Senha de acesso ao app |
+| `SESSION_SECRET` | Token opaco armazenado no cookie (nunca a senha). Gere com `openssl rand -hex 32`. |
+
+## Backup do banco de dados
+
+O Postgres roda em container Coolify com volume persistente. Estratégia atual:
+
+- **Volume snapshot via Coolify**: habilitar snapshots periódicos no painel Coolify para o volume do Postgres.
+- **Dump manual**: `docker exec <container> pg_dump -U postgres meucorpo > backup-$(date +%F).sql`
+- Não há cron externo configurado. Para produção, adicionar um cron no host ou um serviço externo (pgbackups, Coolify scheduled backup, etc.).
 
 ## Modelos Prisma
 
