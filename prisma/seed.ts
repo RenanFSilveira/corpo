@@ -48,91 +48,85 @@ async function main() {
 
   // ─── Exercises ────────────────────────────────────────────────────────────
   const exercises = await Promise.all([
-    // Push / Empurrar
+    // Empurrar / Peito
     prisma.exercise.create({ data: { nome: 'Supino reto halteres', grupo: 'empurrar' } }),
-    prisma.exercise.create({ data: { nome: 'Supino inclinado halteres', grupo: 'empurrar' } }),
-    prisma.exercise.create({ data: { nome: 'Desenvolvimento ombro', grupo: 'ombro' } }),
+    prisma.exercise.create({ data: { nome: 'Crossover polia baixa→cima', grupo: 'empurrar' } }),
+    prisma.exercise.create({ data: { nome: 'Peitoral voador máquina', grupo: 'empurrar' } }),
     prisma.exercise.create({ data: { nome: 'Elevação lateral', grupo: 'ombro' } }),
-    // Pull / Puxar
-    prisma.exercise.create({ data: { nome: 'Remada', grupo: 'puxar' } }),
+    // Puxar / Costas
     prisma.exercise.create({ data: { nome: 'Remada unilateral', grupo: 'puxar' } }),
     prisma.exercise.create({ data: { nome: 'Puxada alta / Barra', grupo: 'puxar' } }),
-    // Legs / Pernas
-    prisma.exercise.create({ data: { nome: 'Agachamento / Leg press', grupo: 'pernas' } }),
+    // Pernas
     prisma.exercise.create({ data: { nome: 'Leg press', grupo: 'pernas' } }),
-    prisma.exercise.create({ data: { nome: 'Stiff', grupo: 'pernas' } }),
+    prisma.exercise.create({ data: { nome: 'Mesa flexora', grupo: 'pernas' } }),
+    prisma.exercise.create({ data: { nome: 'Cadeira extensora', grupo: 'pernas' } }),
     prisma.exercise.create({ data: { nome: 'Hip thrust', grupo: 'pernas' } }),
-    prisma.exercise.create({ data: { nome: 'Afundo', grupo: 'pernas', notas: 'cada perna' } }),
     prisma.exercise.create({ data: { nome: 'Panturrilha', grupo: 'pernas' } }),
-    // Arms / Braço
-    prisma.exercise.create({ data: { nome: 'Rosca direta', grupo: 'braço' } }),
-    prisma.exercise.create({ data: { nome: 'Rosca martelo', grupo: 'braço' } }),
+    // Braço
+    prisma.exercise.create({ data: { nome: 'Bíceps unilateral banco Scott', grupo: 'braço', notas: 'cada lado' } }),
     prisma.exercise.create({ data: { nome: 'Tríceps corda', grupo: 'braço' } }),
     // Core
     prisma.exercise.create({ data: { nome: 'Prancha', grupo: 'core' } }),
-    prisma.exercise.create({ data: { nome: 'Abdominal infra', grupo: 'core' } }),
+    prisma.exercise.create({ data: { nome: 'Abdominal máquina', grupo: 'core' } }),
   ])
 
   const ex = {
     supinoreto: exercises[0],
-    supinoinclinado: exercises[1],
-    desenvolvimento: exercises[2],
+    crossover: exercises[1],
+    voador: exercises[2],
     elevacaolateral: exercises[3],
-    remada: exercises[4],
-    remadauni: exercises[5],
-    puxada: exercises[6],
-    agachamento: exercises[7],
-    legpress: exercises[8],
-    stiff: exercises[9],
-    hipthrust: exercises[10],
-    afundo: exercises[11],
-    panturrilha: exercises[12],
-    rosca: exercises[13],
-    roscamartelo: exercises[14],
-    triceps: exercises[15],
-    prancha: exercises[16],
-    abdominalinfra: exercises[17],
+    remadauni: exercises[4],
+    puxada: exercises[5],
+    legpress: exercises[6],
+    mesaflexora: exercises[7],
+    cadeiraextensora: exercises[8],
+    hipthrust: exercises[9],
+    panturrilha: exercises[10],
+    bicepsscott: exercises[11],
+    triceps: exercises[12],
+    prancha: exercises[13],
+    abdominalmaquina: exercises[14],
   }
-  console.log('✓ Exercícios inseridos (18 itens)')
+  console.log('✓ Exercícios inseridos (15 itens)')
 
   // ─── Templates A / B / C ─────────────────────────────────────────────────
   const templateA = await prisma.workoutTemplate.create({ data: { nome: 'Full Body A', ordem: 1 } })
   const templateB = await prisma.workoutTemplate.create({ data: { nome: 'Full Body B', ordem: 2 } })
   const templateC = await prisma.workoutTemplate.create({ data: { nome: 'Full Body C', ordem: 3 } })
 
-  // Template A — empurrar/quadríceps
+  // Template A — peito + quadríceps
   await prisma.workoutTemplateExercise.createMany({
     data: [
-      { templateId: templateA.id, exerciseId: ex.agachamento.id, ordem: 1, seriesAlvo: 3, repsAlvo: '8-10' },
-      { templateId: templateA.id, exerciseId: ex.supinoreto.id,  ordem: 2, seriesAlvo: 3, repsAlvo: '8-12' },
-      { templateId: templateA.id, exerciseId: ex.remada.id,      ordem: 3, seriesAlvo: 3, repsAlvo: '10-12' },
-      { templateId: templateA.id, exerciseId: ex.desenvolvimento.id, ordem: 4, seriesAlvo: 3, repsAlvo: '10-12' },
-      { templateId: templateA.id, exerciseId: ex.rosca.id,       ordem: 5, seriesAlvo: 2, repsAlvo: '12' },
-      { templateId: templateA.id, exerciseId: ex.prancha.id,     ordem: 6, seriesAlvo: 3, repsAlvo: '30-45s' },
+      { templateId: templateA.id, exerciseId: ex.legpress.id,     ordem: 1, seriesAlvo: 3, repsAlvo: '8-12' },
+      { templateId: templateA.id, exerciseId: ex.mesaflexora.id,  ordem: 2, seriesAlvo: 3, repsAlvo: '10-12' },
+      { templateId: templateA.id, exerciseId: ex.crossover.id,    ordem: 3, seriesAlvo: 3, repsAlvo: '10-12' },
+      { templateId: templateA.id, exerciseId: ex.remadauni.id,    ordem: 4, seriesAlvo: 3, repsAlvo: '10-12', notas: 'cada lado' },
+      { templateId: templateA.id, exerciseId: ex.bicepsscott.id,  ordem: 5, seriesAlvo: 3, repsAlvo: '10-12', notas: 'cada lado' },
+      { templateId: templateA.id, exerciseId: ex.prancha.id,      ordem: 6, seriesAlvo: 3, repsAlvo: '30-45s' },
     ],
   })
 
-  // Template B — puxar/posterior
+  // Template B — costas + glúteo/posterior
   await prisma.workoutTemplateExercise.createMany({
     data: [
-      { templateId: templateB.id, exerciseId: ex.stiff.id,          ordem: 1, seriesAlvo: 3, repsAlvo: '8-10' },
-      { templateId: templateB.id, exerciseId: ex.puxada.id,         ordem: 2, seriesAlvo: 3, repsAlvo: '8-12' },
-      { templateId: templateB.id, exerciseId: ex.supinoinclinado.id, ordem: 3, seriesAlvo: 3, repsAlvo: '10-12' },
-      { templateId: templateB.id, exerciseId: ex.afundo.id,         ordem: 4, seriesAlvo: 3, repsAlvo: '10-12', notas: 'cada perna' },
-      { templateId: templateB.id, exerciseId: ex.triceps.id,        ordem: 5, seriesAlvo: 2, repsAlvo: '12' },
-      { templateId: templateB.id, exerciseId: ex.abdominalinfra.id, ordem: 6, seriesAlvo: 3, repsAlvo: '12-15' },
+      { templateId: templateB.id, exerciseId: ex.cadeiraextensora.id, ordem: 1, seriesAlvo: 3, repsAlvo: '10-12' },
+      { templateId: templateB.id, exerciseId: ex.hipthrust.id,        ordem: 2, seriesAlvo: 3, repsAlvo: '10-12', notas: 'máquina ou coice na polia' },
+      { templateId: templateB.id, exerciseId: ex.voador.id,           ordem: 3, seriesAlvo: 3, repsAlvo: '10-12' },
+      { templateId: templateB.id, exerciseId: ex.puxada.id,           ordem: 4, seriesAlvo: 3, repsAlvo: '8-12' },
+      { templateId: templateB.id, exerciseId: ex.triceps.id,          ordem: 5, seriesAlvo: 3, repsAlvo: '10-12' },
+      { templateId: templateB.id, exerciseId: ex.abdominalmaquina.id,  ordem: 6, seriesAlvo: 3, repsAlvo: '12-15', notas: 'ou elevação de pernas' },
     ],
   })
 
-  // Template C — pernas/glúteo
+  // Template C — pernas completo + mix
   await prisma.workoutTemplateExercise.createMany({
     data: [
-      { templateId: templateC.id, exerciseId: ex.legpress.id,      ordem: 1, seriesAlvo: 3, repsAlvo: '10-12' },
-      { templateId: templateC.id, exerciseId: ex.hipthrust.id,     ordem: 2, seriesAlvo: 3, repsAlvo: '10-12' },
-      { templateId: templateC.id, exerciseId: ex.remadauni.id,     ordem: 3, seriesAlvo: 3, repsAlvo: '10-12', notas: 'unilateral' },
-      { templateId: templateC.id, exerciseId: ex.elevacaolateral.id, ordem: 4, seriesAlvo: 3, repsAlvo: '12-15' },
-      { templateId: templateC.id, exerciseId: ex.roscamartelo.id,  ordem: 5, seriesAlvo: 2, repsAlvo: '12' },
-      { templateId: templateC.id, exerciseId: ex.panturrilha.id,   ordem: 6, seriesAlvo: 3, repsAlvo: '15-20' },
+      { templateId: templateC.id, exerciseId: ex.legpress.id,        ordem: 1, seriesAlvo: 3, repsAlvo: '8-12', notas: 'pés mais altos = + glúteo/posterior' },
+      { templateId: templateC.id, exerciseId: ex.mesaflexora.id,     ordem: 2, seriesAlvo: 3, repsAlvo: '10-12' },
+      { templateId: templateC.id, exerciseId: ex.supinoreto.id,      ordem: 3, seriesAlvo: 3, repsAlvo: '8-12', notas: 'máquina ou halteres' },
+      { templateId: templateC.id, exerciseId: ex.remadauni.id,       ordem: 4, seriesAlvo: 3, repsAlvo: '10-12', notas: 'cada lado' },
+      { templateId: templateC.id, exerciseId: ex.elevacaolateral.id, ordem: 5, seriesAlvo: 3, repsAlvo: '12-15' },
+      { templateId: templateC.id, exerciseId: ex.panturrilha.id,     ordem: 6, seriesAlvo: 3, repsAlvo: '15-20' },
     ],
   })
   console.log('✓ Templates A/B/C inseridos com exercícios')
